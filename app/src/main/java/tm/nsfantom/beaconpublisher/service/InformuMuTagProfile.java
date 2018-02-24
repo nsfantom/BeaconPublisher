@@ -140,13 +140,39 @@ public class InformuMuTagProfile {
                 BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
                 BluetoothGattCharacteristic.PERMISSION_READ
         );
-        BluetoothGattCharacteristic gcAppearence = new BluetoothGattCharacteristic(APPEARANCE_UUID.getUuid(),
+        BluetoothGattCharacteristic gcAppearance = new BluetoothGattCharacteristic(APPEARANCE_UUID.getUuid(),
+                BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                BluetoothGattCharacteristic.PERMISSION_READ
+        );
+        BluetoothGattCharacteristic gcManufactureName = new BluetoothGattCharacteristic(MANUFACTURER_NAME_UUID.getUuid(),
+                BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                BluetoothGattCharacteristic.PERMISSION_READ
+        );
+
+        BluetoothGattCharacteristic gcFirm = new BluetoothGattCharacteristic(FIRMWARE_REVISION_STRING_UUID.getUuid(),
+                BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                BluetoothGattCharacteristic.PERMISSION_READ
+        );
+        BluetoothGattCharacteristic gcModel = new BluetoothGattCharacteristic(MODEL_NUMBER_STRING_UUID.getUuid(),
+                BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                BluetoothGattCharacteristic.PERMISSION_READ
+        );
+        BluetoothGattCharacteristic gcSystemId= new BluetoothGattCharacteristic(SYSTEM_ID_UUID.getUuid(),
+                BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                BluetoothGattCharacteristic.PERMISSION_READ
+        );
+        BluetoothGattCharacteristic gcBattery = new BluetoothGattCharacteristic(BATTERY_LEVEL_UUID.getUuid(),
                 BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
                 BluetoothGattCharacteristic.PERMISSION_READ
         );
 
         service.addCharacteristic(gcDN);
-        service.addCharacteristic(gcAppearence);
+        service.addCharacteristic(gcAppearance);
+        service.addCharacteristic(gcManufactureName);
+        service.addCharacteristic(gcFirm);
+        service.addCharacteristic(gcModel);
+        service.addCharacteristic(gcSystemId);
+        service.addCharacteristic(gcBattery);
         return service;
     }
 

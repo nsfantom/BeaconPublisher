@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.UUID;
 
 import timber.log.Timber;
+import tm.nsfantom.beaconpublisher.BuildConfig;
 import tm.nsfantom.beaconpublisher.R;
 import tm.nsfantom.beaconpublisher.databinding.FragmentSimpleadvertiserBinding;
 import tm.nsfantom.beaconpublisher.service.InformuMuTagProfile;
@@ -211,6 +212,22 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
                 } else if (characteristic.getUuid().equals(InformuMuTagProfile.TAG_COLOR_UUID.getUuid())) {
                     Timber.d("%s is reading characteristic device name", device.getName());
                     characteristic.setValue(String.valueOf(prefStorage.getTagColor()+1));
+                    gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
+                } else if (characteristic.getUuid().equals(InformuMuTagProfile.MODEL_NUMBER_STRING_UUID.getUuid())) {
+                    Timber.d("%s is reading characteristic device name", device.getName());
+                    characteristic.setValue("android1");
+                    gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
+                } else if (characteristic.getUuid().equals(InformuMuTagProfile.FIRMWARE_REVISION_STRING_UUID.getUuid())) {
+                    Timber.d("%s is reading characteristic device name", device.getName());
+                    characteristic.setValue(BuildConfig.VERSION_NAME);
+                    gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
+                } else if (characteristic.getUuid().equals(InformuMuTagProfile.SYSTEM_ID_UUID.getUuid())) {
+                    Timber.d("%s is reading characteristic device name", device.getName());
+                    characteristic.setValue("010101");
+                    gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
+                } else if (characteristic.getUuid().equals(InformuMuTagProfile.BATTERY_LEVEL_UUID.getUuid())) {
+                    Timber.d("%s is reading characteristic device name", device.getName());
+                    characteristic.setValue("3");
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
                 }
             }
