@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/llControls"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/tvMajorLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread_inside">
+
+            <TextView
+                android:id="@+id/tvLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:padding="5dp"
+                android:text="@string/broadcast_device" />
+
+            <Switch
+                android:id="@+id/switchAdvertise"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:switchMinWidth="80dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvMajorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Device Major: "
+            app:layout_constraintBottom_toTopOf="@+id/tvMinorLabel"
+            app:layout_constraintEnd_toStartOf="@+id/etMajor"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llControls" />
+
+        <EditText
+            android:id="@+id/etMajor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|start"
+            android:imeOptions="actionDone"
+            android:inputType="number"
+            android:maxLength="4"
+            android:text="00"
+            app:layout_constraintBottom_toTopOf="@+id/tvMinorLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvMajorLabel"
+            app:layout_constraintTop_toTopOf="@+id/tvMajorLabel" />
+
+        <TextView
+            android:id="@+id/tvMinorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Device Minor: "
+            app:layout_constraintBottom_toTopOf="@+id/tvDevNameLabel"
+            app:layout_constraintEnd_toStartOf="@+id/etMinor"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvMajorLabel" />
+
+        <EditText
+            android:id="@+id/etMinor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|start"
+            android:imeOptions="actionDone"
+            android:inputType="number"
+            android:maxLength="4"
+            android:text="00"
+            app:layout_constraintBottom_toBottomOf="@+id/tvMinorLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvMinorLabel"
+            app:layout_constraintTop_toTopOf="@+id/tvMinorLabel" />
+
+        <TextView
+            android:id="@+id/tvDevNameLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Device Name: "
+            app:layout_constraintBottom_toTopOf="@+id/logger"
+            app:layout_constraintEnd_toStartOf="@+id/etDeviceName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvMinorLabel" />
+
+        <EditText
+            android:id="@+id/etDeviceName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|start"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLength="14"
+            android:text="Informu Mu Tag"
+            app:layout_constraintBottom_toBottomOf="@+id/tvDevNameLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvDevNameLabel"
+            app:layout_constraintTop_toTopOf="@+id/tvDevNameLabel" />
+
+        <ScrollView
+            android:id="@+id/logger"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDevNameLabel"
+            android:layout_margin="8dp">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <TextView
+                    android:id="@+id/tvLogger"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/colorAccent"
+                    android:minLines="3"/>
+            </LinearLayout>
+
+
+        </ScrollView>
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

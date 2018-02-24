@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">BeaconPublisher</string>
+
+    <string name="bt_not_enabled_leaving">User declined to enable Bluetooth, exiting Bluetooth Advertisements.</string>
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="bt_ads_not_supported">Bluetooth Advertisements are not supported on this device.</string>
+    <string name="label_data">Data:</string>
+    <string name="label_device_address">Device address:</string>
+    <string name="label_state">State:</string>
+    <string name="no_data">No data</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="title_devices">BLE Device Scan</string>
+
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+    <string name="broadcast_device">Broadcast Device</string>
+    <string name="start_error_prefix">Start Advertising failed: </string>
+    <string name="start_error_already_started">already started.</string>
+    <string name="start_error_too_large">data packet exceeded 31 Byte limit.</string>
+    <string name="start_error_unsupported">not supported on this device.</string>
+    <string name="start_error_internal">internal error.</string>
+    <string name="start_error_too_many">too many advertisers.</string>
+    <string name="start_error_unknown">unknown error</string>
+    <string name="advertising_timedout">Advertising stopped due to timeout.</string>
+    <string name="bt_null">Error: Bluetooth object null</string>
+
+    <string name="unknown_device">Unknown device</string>
+    <string name="unknown_characteristic">Unknown characteristic</string>
+    <string name="unknown_service">Unknown service</string>
+
+    <!-- Menu items -->
+    <string name="menu_connect">Connect</string>
+    <string name="menu_disconnect">Disconnect</string>
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+
+    <string name="ble_adv_not_supported">BLE pheripheral is not supported on this device.</string>
+    <string name="ble_initialized">BLE has been initialized.</string>
+    <string name="ble_stop_adv">BLE advertisement stopped.</string>
+    <string name="ble_start_adv">BLE advertisement started.</string>
+    <string name="stop_gatt_server">GATT server stopped.</string>
+
+
+</resources>
