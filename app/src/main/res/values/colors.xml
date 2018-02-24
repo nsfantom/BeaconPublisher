@@ -3,4 +3,15 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorBackgroundSemiTransparent">#aaffffff</color>
+    <color name="colorTextDark">#000009</color>
+
+    <color name="tagCharcoal">#36454f</color>
+    <color name="tagCloud">#D8EDF2</color>
+    <color name="tagIndigogo">#4b0082</color>
+    <color name="tagKickstarter">#034752</color>
+    <color name="tagMuOrange">#FFA500</color>
+    <color name="tagScarlet">#ff2400</color>
+    <color name="tagSky">#87cefa</color>
+    <color name="tagSmoke">#f5f5f5</color>
 </resources>

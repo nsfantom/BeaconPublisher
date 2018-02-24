@@ -40,6 +40,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import java.nio.ByteBuffer;
@@ -73,6 +74,7 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
     private BluetoothGattServerCallback gattCallback;
     private boolean isAdvertised = false;
     private List<BluetoothDevice> managedDevices = new ArrayList<BluetoothDevice>();
+    private ColorSpinnerAdapter spinnerAdapter;
 
     static final int APPLE = 0x004c;
     static final UUID uuid = UUID.fromString(Constants.DEVICEUUID);
@@ -112,11 +114,14 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
             if (isChecked) {
                 startAdvertise();
                 startGattServer();
+                layout.llControls.setKeepScreenOn(true);
             } else {
                 stopGattServer();
                 stopAdvertise();
+                layout.llControls.setKeepScreenOn(false);
             }
         });
+//        layout.llControls.setBackgroundResource(ColorSpinnerAdapter.TagColor.values()[prefStorage.getTagColor()].colorResource);
         layout.etMajor.setText(String.valueOf(prefStorage.getMajor()));
         major = prefStorage.getMajor();
         layout.etMinor.setText(String.valueOf(prefStorage.getMinor()));
@@ -125,6 +130,22 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
         layout.etMinor.setOnEditorActionListener(this);
         layout.etDeviceName.setText(prefStorage.getDeviceName());
         layout.etDeviceName.setOnEditorActionListener(this);
+        layout.spinnerTagColor.setAdapter(spinnerAdapter = new ColorSpinnerAdapter());
+        layout.spinnerTagColor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                prefStorage.saveTagColor(position);
+                layout.llControls.setBackgroundResource(ColorSpinnerAdapter.TagColor.values()[position].colorResource);
+                notifyCharacteristicChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                parent.setSelection(prefStorage.getTagColor());
+            }
+        });
+        layout.spinnerTagColor.setSelection(prefStorage.getTagColor());
+        layout.tvLogger.setOnLongClickListener(v -> {layout.tvLogger.setText(""); return true;});
     }
 
     private void init() {
@@ -189,7 +210,7 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
                 } else if (characteristic.getUuid().equals(InformuMuTagProfile.TAG_COLOR_UUID.getUuid())) {
                     Timber.d("%s is reading characteristic device name", device.getName());
-                    characteristic.setValue("1");
+                    characteristic.setValue(String.valueOf(prefStorage.getTagColor()+1));
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
                 }
             }
@@ -199,6 +220,7 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
                 Timber.d("onCharacteristicWriteRequest: requestId=" + requestId + " preparedWrite="
                         + Boolean.toString(preparedWrite) + " responseNeeded="
                         + Boolean.toString(responseNeeded) + " offset=" + offset);
+
                 if(characteristic.getUuid().equals(InformuMuTagProfile.DEVICE_MAJOR_UUID.getUuid())){
                     Timber.d("%s is writing characteristic", device.getName());
                     if (value != null && value.length > 0) {
@@ -217,6 +239,18 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
                         Timber.d("data: %s", str);
                         getActivity().runOnUiThread(()-> layout.etMinor.setText(str));
                         appendStatus(str);
+                    } else {
+                        Timber.d("Invalid value.");
+                    }
+                    gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, null);
+                } else if (characteristic.getUuid().equals(InformuMuTagProfile.TAG_COLOR_UUID.getUuid())){
+                    Timber.d("%s is writing characteristic", device.getName());
+                    if (value != null && value.length >0) {
+                        int position = ColorSpinnerAdapter.TagColor.getIndex(value[0]);
+                        Timber.d("data: %s", position);
+                        prefStorage.saveTagColor(position);
+                        getActivity().runOnUiThread(()-> layout.spinnerTagColor.setSelection(position));//.setText(str));
+                        appendStatus(String.valueOf(position));
                     } else {
                         Timber.d("Invalid value.");
                     }
@@ -249,19 +283,11 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        layout.llControls.setKeepScreenOn(true);
-    }
-
-    /**
-     * When app goes off screen, unregister the Advertising failure Receiver to stop memory leaks.
-     * (and because the app doesn't care if Advertising fails while the UI isn't active)
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
+    public void onDestroyView() {
         layout.llControls.setKeepScreenOn(false);
+        stopGattServer();
+        stopAdvertise();
+        super.onDestroyView();
     }
 
     private void startAdvertise() {
@@ -331,6 +357,7 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
         AdvertiseSettings.Builder builder = new AdvertiseSettings.Builder()
                 .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
                 .setConnectable(true)
+                .setTimeout(Constants.ADVERTISE_TIMEOUT)
                 .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_BALANCED);
         return builder.build();
     }

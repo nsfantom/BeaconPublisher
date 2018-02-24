@@ -26,13 +26,19 @@
                 android:layout_height="wrap_content"
                 android:minWidth="100dp"
                 android:padding="5dp"
-                android:text="@string/broadcast_device" />
+                android:text="@string/broadcast_device"
+                android:background="@color/colorBackgroundSemiTransparent"
+                android:textColor="@color/colorTextDark"
+                android:layout_marginTop="8dp"/>
 
             <Switch
                 android:id="@+id/switchAdvertise"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                android:padding="4dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:switchMinWidth="80dp" />
         </LinearLayout>
 
@@ -92,7 +98,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:text="Device Name: "
-            app:layout_constraintBottom_toTopOf="@+id/logger"
+            app:layout_constraintBottom_toTopOf="@+id/tvTagColorLabel"
             app:layout_constraintEnd_toStartOf="@+id/etDeviceName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvMinorLabel" />
@@ -111,6 +117,26 @@
             app:layout_constraintStart_toEndOf="@+id/tvDevNameLabel"
             app:layout_constraintTop_toTopOf="@+id/tvDevNameLabel" />
 
+        <TextView
+            android:id="@+id/tvTagColorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Device Name: "
+            app:layout_constraintBottom_toTopOf="@+id/logger"
+            app:layout_constraintEnd_toStartOf="@+id/spinnerTagColor"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDevNameLabel" />
+
+        <Spinner
+            android:id="@+id/spinnerTagColor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/tvTagColorLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvTagColorLabel"
+            app:layout_constraintTop_toTopOf="@+id/tvTagColorLabel"/>
+
         <ScrollView
             android:id="@+id/logger"
             android:layout_width="0dp"
@@ -118,7 +144,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDevNameLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvTagColorLabel"
             android:layout_margin="8dp">
             <LinearLayout
                 android:orientation="vertical"
@@ -131,8 +157,6 @@
                     android:textColor="@color/colorAccent"
                     android:minLines="3"/>
             </LinearLayout>
-
-
         </ScrollView>
 
     </android.support.constraint.ConstraintLayout>

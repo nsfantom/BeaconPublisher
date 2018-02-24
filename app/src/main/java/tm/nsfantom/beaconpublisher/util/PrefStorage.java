@@ -8,6 +8,7 @@ public final class PrefStorage {
     private final String DEVICE_MINOR = "device_minor";
     private final String DEVICE_NAME = "device_name";
     private final String DEVICE_BATTERY = "battery_level";
+    private final String DEVICE_TAG_COLOR = "tag_color";
 
 
     private SharedPreferences sharedPreferences;
@@ -35,9 +36,15 @@ public final class PrefStorage {
                 .apply();
     }
 
-    public void saveBatteryLevel(int level){
+    public void saveBatteryLevel(int level) {
         getPrefs().edit()
                 .putInt(DEVICE_BATTERY, level)
+                .apply();
+    }
+
+    public void saveTagColor(int position) {
+        getPrefs().edit()
+                .putInt(DEVICE_TAG_COLOR, position)
                 .apply();
     }
 
@@ -49,7 +56,9 @@ public final class PrefStorage {
         return getPrefs().getInt(DEVICE_MINOR, 0);
     }
 
-    public String getDeviceName(){return getPrefs().getString(DEVICE_NAME,"Informu Mu Tag");}
+    public String getDeviceName() {return getPrefs().getString(DEVICE_NAME, "Informu Mu Tag");}
+
+    public int getTagColor() { return getPrefs().getInt(DEVICE_TAG_COLOR, 0);}
 
     SharedPreferences getPrefs() {
         if (sharedPreferences == null)
