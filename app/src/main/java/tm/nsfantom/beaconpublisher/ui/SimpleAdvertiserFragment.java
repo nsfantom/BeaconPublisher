@@ -75,7 +75,6 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
     private BluetoothGattServerCallback gattCallback;
     private boolean isAdvertised = false;
     private List<BluetoothDevice> managedDevices = new ArrayList<BluetoothDevice>();
-    private ColorSpinnerAdapter spinnerAdapter;
 
     static final int APPLE = 0x004c;
     static final UUID uuid = UUID.fromString(Constants.DEVICEUUID);
@@ -131,7 +130,7 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
         layout.etMinor.setOnEditorActionListener(this);
         layout.etDeviceName.setText(prefStorage.getDeviceName());
         layout.etDeviceName.setOnEditorActionListener(this);
-        layout.spinnerTagColor.setAdapter(spinnerAdapter = new ColorSpinnerAdapter());
+        layout.spinnerTagColor.setAdapter(new ColorSpinnerAdapter());
         layout.spinnerTagColor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
