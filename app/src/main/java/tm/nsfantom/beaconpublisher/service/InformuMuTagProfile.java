@@ -10,31 +10,31 @@ import android.os.ParcelUuid;
 
 public class InformuMuTagProfile {
 
-    public static final ParcelUuid GENERIC_ACCESS_SERVICE = ParcelUuid.fromString("00001800-0000-1000-8000-00805F9B34FB");
+    public static final ParcelUuid GENERIC_ACCESS_SERVICE = ParcelUuid.fromString("00001800-0000-1000-8000-00805f9b34fb");
     // Expected Value: Informu Mu Tag (14 bytes)
-    public static final ParcelUuid DEVICE_NAME_UUID = ParcelUuid.fromString("00002A00-0000-1000-8000-00805F9B34FB");
+    public static final ParcelUuid DEVICE_NAME_UUID = ParcelUuid.fromString("00002a00-0000-1000-8000-00805f9b34fb");
     // Expected Value: (  bytes)
-    public static final ParcelUuid APPEARANCE_UUID = ParcelUuid.fromString("00002A01-0000-1000-8000-00805F9B34FB");
+    public static final ParcelUuid APPEARANCE_UUID = ParcelUuid.fromString("00002a01-0000-1000-8000-00805f9b34fb");
 
     /**
      * Mu Tag Device Info Service
      */
 
     // Expected Value:(11bytes)
-    public static final ParcelUuid MANUFACTURER_NAME_UUID = ParcelUuid.fromString("00002A29-0000-1000-8000-00805F9B34FB");
+    public static final ParcelUuid MANUFACTURER_NAME_UUID = ParcelUuid.fromString("00002A29-0000-1000-8000-00805F9B34FB".toLowerCase());
 
     // Expected Value:(3bytes)
-    public static final ParcelUuid FIRMWARE_REVISION_STRING_UUID = ParcelUuid.fromString("00002A26-0000-1000-8000-00805F9B34FB");
+    public static final ParcelUuid FIRMWARE_REVISION_STRING_UUID = ParcelUuid.fromString("00002A26-0000-1000-8000-00805F9B34FB".toLowerCase());
 
     // Expected Value:(8bytes)
-    public static final ParcelUuid MODEL_NUMBER_STRING_UUID = ParcelUuid.fromString("00002A24-0000-1000-8000-00805F9B34FB");
+    public static final ParcelUuid MODEL_NUMBER_STRING_UUID = ParcelUuid.fromString("00002A24-0000-1000-8000-00805F9B34FB".toLowerCase());
 
 
     // Expected Value: (6 bytes)
-    public static final ParcelUuid SYSTEM_ID_UUID = ParcelUuid.fromString("00002A23-0000-1000-8000-00805F9B34FB");
+    public static final ParcelUuid SYSTEM_ID_UUID = ParcelUuid.fromString("00002A23-0000-1000-8000-00805F9B34FB".toLowerCase());
 
     //Expected Value: (1  bytes)
-    public static final ParcelUuid BATTERY_LEVEL_UUID = ParcelUuid.fromString("00002A19-0000-1000-8000-00805F9B34FB");
+    public static final ParcelUuid BATTERY_LEVEL_UUID = ParcelUuid.fromString("00002A19-0000-1000-8000-00805F9B34FB".toLowerCase());
 
     /**
      * Mu Tag Configuration Service
@@ -121,7 +121,13 @@ public class InformuMuTagProfile {
                 BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE
         );
 
+        BluetoothGattCharacteristic gcDN = new BluetoothGattCharacteristic(DEVICE_NAME_UUID.getUuid(),
+                BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                BluetoothGattCharacteristic.PERMISSION_READ
+        );
+
         service.addCharacteristic(gcDU);
+        service.addCharacteristic(gcDN);
         service.addCharacteristic(gcMajor);
         service.addCharacteristic(gcMinor);
         service.addCharacteristic(gcTxPower);
@@ -134,7 +140,7 @@ public class InformuMuTagProfile {
     }
 
     public static BluetoothGattService createInformuGenericAccessService() {
-        BluetoothGattService service = new BluetoothGattService(GENERIC_ACCESS_SERVICE.getUuid(), BluetoothGattService.SERVICE_TYPE_SECONDARY);
+        BluetoothGattService service = new BluetoothGattService(GENERIC_ACCESS_SERVICE.getUuid(), BluetoothGattService.SERVICE_TYPE_PRIMARY);
 
 
         BluetoothGattCharacteristic gcDN = new BluetoothGattCharacteristic(DEVICE_NAME_UUID.getUuid(),

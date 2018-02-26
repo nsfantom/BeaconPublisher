@@ -214,8 +214,8 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
                     characteristic.setValue(layout.etMinor.getText().toString());
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
                 } else if (characteristic.getUuid().equals(InformuMuTagProfile.TAG_COLOR_UUID.getUuid())) {
-                    Timber.d("%s is reading characteristic device name", device.getName());
-                    characteristic.setValue(String.valueOf(prefStorage.getTagColor() + 1));
+                    Timber.d("%s is reading characteristic device name :%s", device.getName(),prefStorage.getTagColor());
+                    characteristic.setValue(String.valueOf(prefStorage.getTagColor()));
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
                 } else if (characteristic.getUuid().equals(InformuMuTagProfile.MODEL_NUMBER_STRING_UUID.getUuid())) {
                     Timber.d("%s is reading characteristic device name", device.getName());
@@ -234,6 +234,7 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
                     characteristic.setValue("3");
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
                 }
+                gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, "0".getBytes());
             }
 
             @Override
@@ -339,8 +340,7 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
 
     private void startGattServer() {
         gattServer = getBTManager().openGattServer(getContext(), gattCallback);
-        gattServer.clearServices();
-        gattServer.addService(InformuMuTagProfile.createInformuGenericAccessService());
+//        gattServer.addService(InformuMuTagProfile.createInformuGenericAccessService());
         gattServer.addService(InformuMuTagProfile.createConfigurationService());
         gattServer.addService(InformuMuTagProfile.createOTAService());
     }
@@ -356,21 +356,31 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
 
     public void notifyCharacteristicChanged() {
         if (managedDevices.isEmpty()) return;
-        BluetoothGattService service = gattServer.getService(InformuMuTagProfile.GENERIC_ACCESS_SERVICE.getUuid());
-        BluetoothGattCharacteristic characteristic = service.getCharacteristic(InformuMuTagProfile.DEVICE_NAME_UUID.getUuid());
-        characteristic.setValue(layout.etDeviceName.getText().toString());
+//        BluetoothGattService service = gattServer.getService(InformuMuTagProfile.GENERIC_ACCESS_SERVICE.getUuid());
+//        BluetoothGattCharacteristic characteristic = gattServer
+//                .getService(InformuMuTagProfile.GENERIC_ACCESS_SERVICE.getUuid())
+//                .getCharacteristic(InformuMuTagProfile.DEVICE_NAME_UUID.getUuid());
+//        characteristic.setValue(layout.etDeviceName.getText().toString());
 
-        service = gattServer.getService(InformuMuTagProfile.MU_TAG_CONFIGURATION_SERVICE.getUuid());
-        BluetoothGattCharacteristic characteristicMajor = service.getCharacteristic(InformuMuTagProfile.DEVICE_MAJOR_UUID.getUuid());
+        BluetoothGattCharacteristic characteristicMajor = gattServer
+                .getService(InformuMuTagProfile.MU_TAG_CONFIGURATION_SERVICE.getUuid())
+                .getCharacteristic(InformuMuTagProfile.DEVICE_MAJOR_UUID.getUuid());
         characteristicMajor.setValue(layout.etMajor.getText().toString());
-        BluetoothGattCharacteristic characteristicMinor = service.getCharacteristic(InformuMuTagProfile.DEVICE_MINOR_UUID.getUuid());
+        BluetoothGattCharacteristic characteristicMinor = gattServer
+                .getService(InformuMuTagProfile.MU_TAG_CONFIGURATION_SERVICE.getUuid())
+                .getCharacteristic(InformuMuTagProfile.DEVICE_MINOR_UUID.getUuid());
         characteristicMinor.setValue(layout.etMinor.getText().toString());
+        BluetoothGattCharacteristic characteristicColor = gattServer
+                .getService(InformuMuTagProfile.MU_TAG_CONFIGURATION_SERVICE.getUuid())
+                .getCharacteristic(InformuMuTagProfile.TAG_COLOR_UUID.getUuid());
+        characteristicColor.setValue(String.valueOf(prefStorage.getTagColor()));
 
         for (BluetoothDevice device : managedDevices) {
             Timber.d("Going to notify to %s", device.getName());
-            gattServer.notifyCharacteristicChanged(device, characteristic, false);
-//            gattServer.notifyCharacteristicChanged(device, characteristicMajor, false);
-//            gattServer.notifyCharacteristicChanged(device, characteristicMinor, false);
+            //gattServer.notifyCharacteristicChanged(device, characteristic, true);
+            gattServer.notifyCharacteristicChanged(device, characteristicMajor, false);
+            gattServer.notifyCharacteristicChanged(device, characteristicMinor, false);
+            gattServer.notifyCharacteristicChanged(device, characteristicColor,false);
         }
     }
 
@@ -378,15 +388,16 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
         final byte[] manufacturerData = createManufactureData();
         AdvertiseData.Builder builder = new AdvertiseData.Builder()
                 .setIncludeTxPowerLevel(false)
-//                .addServiceUuid(InformuMuTagProfile.MU_TAG_CONFIGURATION_SERVICE)
+//                .addServiceUuid(InformuMuTagProfile.DEVICE_NAME_UUID)
+//                .addServiceData(InformuMuTagProfile.DEVICE_NAME_UUID, "Imformu Mu Tag".getBytes(Charset.forName( "UTF-8" )))
                 .addManufacturerData(APPLE, manufacturerData);
-        //.addServiceUuid(ParcelUuid.fromString("00001802-0000-1000-8000-00805f9b34fb"));
+
         return builder.build();
     }
 
     private static AdvertiseSettings createAdvSettings() {
         AdvertiseSettings.Builder builder = new AdvertiseSettings.Builder()
-                .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
+                .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_LOW)
                 .setConnectable(true)
                 .setTimeout(Constants.ADVERTISE_TIMEOUT)
                 .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_BALANCED);
@@ -411,7 +422,8 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
     public void appendStatus(final String status) {
         getActivity().runOnUiThread(() -> {
             String current = layout.tvLogger.getText().toString();
-            layout.tvLogger.setText(current + "\n" + status);
+            layout.tvLogger.setText(status.concat("\n").concat(current));
+//            layout.tvLogger.setText(current + "\n" + status);
         });
     }
 
@@ -420,17 +432,16 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
         if (actionId == EditorInfo.IME_ACTION_DONE) {
             switch (v.getId()) {
                 case R.id.etMajor:
-                    prefStorage.saveMajor(Integer.parseInt(v.getText().toString()));
                     major = Integer.parseInt(v.getText().toString());
+                    prefStorage.saveMajor(major);
                     break;
                 case R.id.etMinor:
-                    prefStorage.saveMinor(Integer.parseInt(v.getText().toString()));
                     minor = Integer.parseInt(v.getText().toString());
+                    prefStorage.saveMinor(minor);
                     break;
                 case R.id.etDeviceName:
                     prefStorage.saveDeviceName(layout.etDeviceName.getText().toString());
                     break;
-
             }
             notifyCharacteristicChanged();
         }
