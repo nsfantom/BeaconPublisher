@@ -145,7 +145,10 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
             }
         });
         layout.spinnerTagColor.setSelection(prefStorage.getTagColor());
-        layout.tvLogger.setOnLongClickListener(v -> {layout.tvLogger.setText(""); return true;});
+        layout.tvLogger.setOnLongClickListener(v -> {
+            layout.tvLogger.setText("");
+            return true;
+        });
     }
 
     private void init() {
@@ -173,9 +176,11 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
                     if (!managedDevices.contains(device) && (!device.getAddress().equals(bluetoothAdapter.getAddress()))) {
                         managedDevices.add(device);
+                        appendStatus("name: " + device.getName() + " device: " + device.getAddress() + " connected");
                     }
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     managedDevices.remove(device);
+                    appendStatus("name: " + device.getName() + " device: " + device.getAddress() + " disconnected");
                 }
 
             }
@@ -183,11 +188,11 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
             @Override
             public void onServiceAdded(int status, BluetoothGattService service) {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
-                    appendStatus("onServiceAdded: status=GATT_SUCCESS service=" + service.getUuid().toString());
-                    Timber.d("onServiceAdded: status=GATT_SUCCESS service=%s", service.getUuid().toString());
+                    appendStatus("onServiceAdded: status = GATT_SUCCESS service = " + service.getUuid().toString());
+                    Timber.d("onServiceAdded: status==GATT_SUCCESS service = %s", service.getUuid().toString());
                 } else {
-                    appendStatus("onServiceAdded: status!=GATT_SUCCESS");
-                    Timber.d("onServiceAdded: status!=GATT_SUCCESS");
+                    appendStatus("onServiceAdded: status = " + status + " service = " + service.getUuid().toString());
+                    Timber.d("onServiceAdded: status!=GATT_SUCCESS service = %s", service.getUuid().toString());
                 }
 
             }
@@ -210,7 +215,7 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
                 } else if (characteristic.getUuid().equals(InformuMuTagProfile.TAG_COLOR_UUID.getUuid())) {
                     Timber.d("%s is reading characteristic device name", device.getName());
-                    characteristic.setValue(String.valueOf(prefStorage.getTagColor()+1));
+                    characteristic.setValue(String.valueOf(prefStorage.getTagColor() + 1));
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
                 } else if (characteristic.getUuid().equals(InformuMuTagProfile.MODEL_NUMBER_STRING_UUID.getUuid())) {
                     Timber.d("%s is reading characteristic device name", device.getName());
@@ -237,35 +242,35 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
                         + Boolean.toString(preparedWrite) + " responseNeeded="
                         + Boolean.toString(responseNeeded) + " offset=" + offset);
 
-                if(characteristic.getUuid().equals(InformuMuTagProfile.DEVICE_MAJOR_UUID.getUuid())){
+                if (characteristic.getUuid().equals(InformuMuTagProfile.DEVICE_MAJOR_UUID.getUuid())) {
                     Timber.d("%s is writing characteristic", device.getName());
                     if (value != null && value.length > 0) {
                         String str = new String(value);
                         Timber.d("data: %s", str);
-                        getActivity().runOnUiThread(()-> layout.etMajor.setText(str));
+                        getActivity().runOnUiThread(() -> layout.etMajor.setText(str));
                         appendStatus(str);
                     } else {
                         Timber.d("Invalid value.");
                     }
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, null);
-                } else if (characteristic.getUuid().equals(InformuMuTagProfile.DEVICE_MINOR_UUID.getUuid())){
+                } else if (characteristic.getUuid().equals(InformuMuTagProfile.DEVICE_MINOR_UUID.getUuid())) {
                     Timber.d("%s is writing characteristic", device.getName());
                     if (value != null && value.length > 0) {
                         String str = new String(value);
                         Timber.d("data: %s", str);
-                        getActivity().runOnUiThread(()-> layout.etMinor.setText(str));
+                        getActivity().runOnUiThread(() -> layout.etMinor.setText(str));
                         appendStatus(str);
                     } else {
                         Timber.d("Invalid value.");
                     }
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, null);
-                } else if (characteristic.getUuid().equals(InformuMuTagProfile.TAG_COLOR_UUID.getUuid())){
+                } else if (characteristic.getUuid().equals(InformuMuTagProfile.TAG_COLOR_UUID.getUuid())) {
                     Timber.d("%s is writing characteristic", device.getName());
-                    if (value != null && value.length >0) {
+                    if (value != null && value.length > 0) {
                         int position = ColorSpinnerAdapter.TagColor.getIndex(value[0]);
                         Timber.d("data: %s", position);
                         prefStorage.saveTagColor(position);
-                        getActivity().runOnUiThread(()-> layout.spinnerTagColor.setSelection(position));//.setText(str));
+                        getActivity().runOnUiThread(() -> layout.spinnerTagColor.setSelection(position));//.setText(str));
                         appendStatus(String.valueOf(position));
                     } else {
                         Timber.d("Invalid value.");
@@ -334,8 +339,10 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
 
     private void startGattServer() {
         gattServer = getBTManager().openGattServer(getContext(), gattCallback);
+        gattServer.clearServices();
         gattServer.addService(InformuMuTagProfile.createInformuGenericAccessService());
         gattServer.addService(InformuMuTagProfile.createConfigurationService());
+        gattServer.addService(InformuMuTagProfile.createOTAService());
     }
 
     private void stopGattServer() {
@@ -353,10 +360,17 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
         BluetoothGattCharacteristic characteristic = service.getCharacteristic(InformuMuTagProfile.DEVICE_NAME_UUID.getUuid());
         characteristic.setValue(layout.etDeviceName.getText().toString());
 
+        service = gattServer.getService(InformuMuTagProfile.MU_TAG_CONFIGURATION_SERVICE.getUuid());
+        BluetoothGattCharacteristic characteristicMajor = service.getCharacteristic(InformuMuTagProfile.DEVICE_MAJOR_UUID.getUuid());
+        characteristicMajor.setValue(layout.etMajor.getText().toString());
+        BluetoothGattCharacteristic characteristicMinor = service.getCharacteristic(InformuMuTagProfile.DEVICE_MINOR_UUID.getUuid());
+        characteristicMinor.setValue(layout.etMinor.getText().toString());
 
         for (BluetoothDevice device : managedDevices) {
             Timber.d("Going to notify to %s", device.getName());
             gattServer.notifyCharacteristicChanged(device, characteristic, false);
+//            gattServer.notifyCharacteristicChanged(device, characteristicMajor, false);
+//            gattServer.notifyCharacteristicChanged(device, characteristicMinor, false);
         }
     }
 
@@ -364,6 +378,7 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
         final byte[] manufacturerData = createManufactureData();
         AdvertiseData.Builder builder = new AdvertiseData.Builder()
                 .setIncludeTxPowerLevel(false)
+//                .addServiceUuid(InformuMuTagProfile.MU_TAG_CONFIGURATION_SERVICE)
                 .addManufacturerData(APPLE, manufacturerData);
         //.addServiceUuid(ParcelUuid.fromString("00001802-0000-1000-8000-00805f9b34fb"));
         return builder.build();
@@ -414,7 +429,6 @@ public class SimpleAdvertiserFragment extends Fragment implements TextView.OnEdi
                     break;
                 case R.id.etDeviceName:
                     prefStorage.saveDeviceName(layout.etDeviceName.getText().toString());
-//                    notifyCharacteristicChanged();
                     break;
 
             }

@@ -84,7 +84,7 @@ public class InformuMuTagProfile {
      * Current Time Service.
      */
     public static BluetoothGattService createConfigurationService() {
-        BluetoothGattService service = new BluetoothGattService(MU_TAG_CONFIGURATION_SERVICE.getUuid(), BluetoothGattService.SERVICE_TYPE_SECONDARY);
+        BluetoothGattService service = new BluetoothGattService(MU_TAG_CONFIGURATION_SERVICE.getUuid(), BluetoothGattService.SERVICE_TYPE_PRIMARY);
 
         BluetoothGattCharacteristic gcDU = new BluetoothGattCharacteristic(DEVICE_UUID.getUuid(),
                 BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_WRITE,
@@ -134,7 +134,8 @@ public class InformuMuTagProfile {
     }
 
     public static BluetoothGattService createInformuGenericAccessService() {
-        BluetoothGattService service = new BluetoothGattService(GENERIC_ACCESS_SERVICE.getUuid(), BluetoothGattService.SERVICE_TYPE_PRIMARY);
+        BluetoothGattService service = new BluetoothGattService(GENERIC_ACCESS_SERVICE.getUuid(), BluetoothGattService.SERVICE_TYPE_SECONDARY);
+
 
         BluetoothGattCharacteristic gcDN = new BluetoothGattCharacteristic(DEVICE_NAME_UUID.getUuid(),
                 BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
